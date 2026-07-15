@@ -1,0 +1,1 @@
+export type categoria_producto = "Electrico" | "electronico" | "de hogar" | "comida" | "informatico" | "escolar"

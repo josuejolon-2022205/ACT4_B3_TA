@@ -1,0 +1,62 @@
+[
+  {
+    "id_producto": 1,
+    "nombre_producto": "castro",
+    "codigo_producto": 23,
+    "cantidad": 2,
+    "precio": 4,
+    "categoria": "Electrico",
+    "estado_venta": "cancelada",
+    "descuento": 22
+  },
+  {
+    "id_producto": 2,
+    "nombre_producto": "Martillo",
+    "codigo_producto": 1002,
+    "cantidad": 30,
+    "precio": 75,
+    "categoria": "de hogar",
+    "estado_venta": "pagado",
+    "descuento": 5
+  },
+  {
+    "id_producto": 3,
+    "nombre_producto": "Pintura Blanca",
+    "codigo_producto": 1003,
+    "cantidad": 20,
+    "precio": 180,
+    "categoria": "de hogar",
+    "estado_venta": "cancelada",
+    "descuento": 0
+  },
+  {
+    "id_producto": 4,
+    "nombre_producto": "Cable UTP",
+    "codigo_producto": 1004,
+    "cantidad": 50,
+    "precio": 35,
+    "categoria": "Electrico",
+    "estado_venta": "pagado",
+    "descuento": 15
+  },
+  {
+    "id_producto": 5,
+    "nombre_producto": "Destornillador Phillips",
+    "codigo_producto": 1005,
+    "cantidad": 25,
+    "precio": 40,
+    "categoria": "de hogar",
+    "estado_venta": "Cancelada",
+    "descuento": 20
+  },
+  {
+    "id_producto": 6,
+    "nombre_producto": "cafe",
+    "codigo_producto": 4,
+    "cantidad": 3,
+    "precio": 23,
+    "categoria": "de hogar",
+    "estado_venta": "pagado",
+    "descuento": 10
+  }
+]
