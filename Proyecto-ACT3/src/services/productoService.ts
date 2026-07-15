@@ -7,6 +7,11 @@ export async function listarProducto(): Promise<Producto[] | string> {
     return leerProductos();
 }
 
+export async function listarProductos(): Promise<Producto[]> {
+    const res = await leerProductos();
+    return Array.isArray(res) ? res : [];
+}
+
 export async function buscarProducto(id: number): Promise<Producto | null> {
     const productos: Producto[] = await leerProductos();
     return productos.find(p => p.id_producto === id) || null;
@@ -20,7 +25,51 @@ export async function crearProducto(nuevoProducto: Producto): Promise<void> {
     await escribirProductos(productos);
 }
 
-export async function actualizarProducto(id: number, actualizarDatos: Partial<Producto>): Promise<boolean> {
+export async function agregarProducto(
+    id: number,
+    nombre: string,
+    precio: number,
+    stock: number,
+    categoria: any,
+    estado: any,
+    descuento: number
+): Promise<Producto | string> {
+    const productos: Producto[] = await leerProductos();
+    if (productos.some(p => p.id_producto === id)) {
+        return "El ID del producto ya existe.";
+    }
+
+    const nuevo: Producto = {
+        id_producto: id,
+        nombre_producto: nombre,
+        codigo_producto: Math.floor(1000 + Math.random() * 9000),
+        cantidad: stock,
+        precio: precio,
+        categoria: categoria,
+        estado_venta: estado,
+        descuento: descuento
+    };
+
+    try {
+        validarProducto(nuevo);
+    } catch (e: any) {
+        return e.message;
+    }
+
+    productos.push(nuevo);
+    await escribirProductos(productos);
+    return nuevo;
+}
+
+export async function actualizarProducto(
+    id: number,
+    nombreOrDatos: string | Partial<Producto>,
+    precio?: number,
+    stock?: number,
+    categoria?: any,
+    estado?: any,
+    descuento?: number
+): Promise<boolean | Producto> {
     const productos: Producto[] = await leerProductos();
     if (id <= 0) return false;
 
@@ -29,9 +78,27 @@ export async function actualizarProducto(id: number, actualizarDatos: Partial<Pr
         return false;
     }
 
+    let actualizarDatos: Partial<Producto> = {};
+
+    if (typeof nombreOrDatos === "object" && nombreOrDatos !== null) {
+        actualizarDatos = nombreOrDatos;
+    } else {
+        if (nombreOrDatos !== undefined) actualizarDatos.nombre_producto = nombreOrDatos;
+        if (precio !== undefined) actualizarDatos.precio = precio;
+        if (stock !== undefined) actualizarDatos.cantidad = stock;
+        if (categoria !== undefined) actualizarDatos.categoria = categoria;
+        if (estado !== undefined) actualizarDatos.estado_venta = estado;
+        if (descuento !== undefined) actualizarDatos.descuento = descuento;
+    }
+
     productos[index] = { ...productos[index], ...actualizarDatos };
     await escribirProductos(productos);
-    return true;
+
+    if (typeof nombreOrDatos === "object" && nombreOrDatos !== null) {
+        return true;
+    } else {
+        return productos[index];
+    }
 }
 
 export async function eliminarProductoPorId(id: number): Promise<boolean> {
@@ -46,6 +113,11 @@ export async function eliminarProductoPorId(id: number): Promise<boolean> {
     productos.splice(index, 1);
     await escribirProductos(productos);
     return true;
+}
+
+export async function eliminarProducto(id: number): Promise<string> {
+    const result = await eliminarProductoPorId(id);
+    return result ? "Producto eliminado correctamente." : "El ID no existe.";
 }
 
 export const calcularSubtotal = (montos: number[]): number =>
