@@ -1,7 +1,7 @@
 import { Cliente } from "../models/clientes";
 import { leerClientes } from "../utils/reader";
 import { escribirClientes } from "../utils/writer";
-import { validarCliente } from "../utils/validaciones"
+import { validarCliente } from "../validator/validaciones"
 
 export async function listarCliente(): Promise<Cliente[] | string> {
     return leerClientes();

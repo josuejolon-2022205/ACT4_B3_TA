@@ -1,7 +1,7 @@
 import { Producto } from "../models/producto";
 import { leerProductos } from "../utils/reader";
 import { escribirProductos } from "../utils/writer";
-import { validarProducto } from "../utils/validaciones";
+import { validarProducto } from "../validator/validaciones";
 
 export async function listarProducto(): Promise<Producto[] | string> {
     return leerProductos();
