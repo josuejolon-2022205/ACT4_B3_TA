@@ -1,10 +1,10 @@
 import * as http from "http";
-import { routerProducto } from "./router"; 
+import { router } from "./router"; 
 
 const port = 3000;
 
 const server = http.createServer(async (req, res) => {
-    await routerProducto(req, res);
+    await router(req, res);
 });
 
 server.listen(port, () => {
