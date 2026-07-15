@@ -8,5 +8,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(port, () => {
-    console.log(`Servidor en http://localhost:${port}`);
+    console.log("-----------------------------------")
+    console.log("Servidor en http://localhost:" + port);
+    console.log("-----------------------------------")
 });
