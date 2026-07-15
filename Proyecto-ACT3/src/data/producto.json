@@ -48,15 +48,5 @@
     "categoria": "de hogar",
     "estado_venta": "Cancelada",
     "descuento": 20
-  },
-  {
-    "id_producto": 6,
-    "nombre_producto": "cafe",
-    "codigo_producto": 4,
-    "cantidad": 3,
-    "precio": 23,
-    "categoria": "de hogar",
-    "estado_venta": "pagado",
-    "descuento": 10
   }
 ]
