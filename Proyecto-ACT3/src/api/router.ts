@@ -1,8 +1,8 @@
 import * as http from "http";
 import { actualizarProducto, agregarProducto, buscarProducto, eliminarProducto, listarProductos } from "../services/productoService";
-import { eliminarCliente } from "../services/clientesService";
+import { eliminarCliente, actualizarCliente, agregarCliente, buscarCliente, listarClientes } from "../services/clientesService";
  
-export async function routerProducto(req : http.IncomingMessage, res : http.ServerResponse){
+export async function router(req : http.IncomingMessage, res : http.ServerResponse){
  
     const partes = req.url?.split("/");
  
@@ -113,7 +113,225 @@ export async function routerProducto(req : http.IncomingMessage, res : http.Serv
         res.end(result);
         return;
     }
+
+    if(req.url === "/clientes" && req.method === "GET"){
+        res.writeHead(200, {
+            "Content-Type":"application/json"
+        });
+        res.end(JSON.stringify(await listarClientes()));
+        return;
+    }
     
+    if(req.url === "/clientes" && req.method === "POST"){
+        let body = "";
+ 
+        req.on("data",(chunk) =>{
+            body += chunk;
+        });
+ 
+        req.on("end", async () =>{
+            try {
+                const p = JSON.parse(body);
+ 
+                const result = await agregarCliente(
+                    Number(p.id),
+                    p.nombre,
+                    p.apellido,
+                    p.direccion,
+                    Number(p.telefono),
+                    p.tipo,
+                    Number(p.dpi),
+                    p.correo
+                );
+ 
+                if (typeof result === "string") {
+                    res.writeHead(400, {
+                        "Content-Type": "application/json"
+                    });
+                    res.end(JSON.stringify({ error: result }));
+                    return;
+                }
+ 
+                res.writeHead(201, {
+                    "Content-Type": "application/json"
+                });
+                res.end(JSON.stringify(result));
+            } catch (error) {
+                res.writeHead(400, {
+                    "Content-Type": "application/json"
+                });
+                res.end(JSON.stringify({ error: error instanceof Error ? error.message : "JSON inválido o error en la solicitud." }));
+            }
+        });
+        return;
+    }
+    
+    if(partes?.length === 3 && partes[1] === "clientes" && req.method === "GET"){
+        const id = Number(partes[2]);
+        const c = await buscarCliente(id);
+ 
+        if(!c){
+            res.writeHead(404, {
+                "Content-Type": "application/json"
+            });
+            res.end(JSON.stringify({ error : "EL id no existe"}));
+            return;
+        }
+ 
+        res.writeHead(200,{
+            "Content-Type":"application/json"
+        });
+        res.end(JSON.stringify(c));
+        return;
+    }
+    
+    if(partes?.length === 3 && partes[1] === "clientes" && req.method === "PUT"){
+        const id = Number(partes[2]);
+        let body = "";
+ 
+        req.on("data", (chunk) =>{
+            body += chunk;
+        });
+ 
+        req.on("end", async () =>{
+            try {
+                const p = JSON.parse(body);
+                const result = await actualizarCliente(id, p.nombre, p.apellido, p.direccion, p.telefono, p.tipo, p.dpi, p.correo);
+ 
+                res.writeHead(200,{
+                    "Content-Type":"application/json"
+                });
+                res.end(JSON.stringify(result));
+            } catch (error) {
+                res.writeHead(400, {
+                    "Content-Type": "application/json"
+                });
+                res.end(JSON.stringify({ error: "Error al procesar la actualización" }));
+            }
+        });
+        return;
+    }
+    
+    if(partes?.length === 3 && partes[1] === "clientes" && req.method === "DELETE"){
+        const id = Number(partes[2]);
+        const result = await eliminarCliente(id);
+ 
+        res.writeHead(200, {
+            "Content-Type": "text/plain"
+        });
+        res.end(result);
+        return;
+    }
+
+    if(req.url === "/clientes" && req.method === "GET"){
+        res.writeHead(200, {
+            "Content-Type":"application/json"
+        });
+        res.end(JSON.stringify(await listarClientes()));
+        return;
+    }
+    
+    if(req.url === "/clientes" && req.method === "POST"){
+        let body = "";
+ 
+        req.on("data",(chunk) =>{
+            body += chunk;
+        });
+ 
+        req.on("end", async () =>{
+            try {
+                const p = JSON.parse(body);
+ 
+                const result = await agregarCliente(
+                    Number(p.id),
+                    p.nombre,
+                    p.apellido,
+                    p.direccion,
+                    Number(p.telefono),
+                    p.tipo,
+                    Number(p.dpi),
+                    p.correo
+                );
+ 
+                if (typeof result === "string") {
+                    res.writeHead(400, {
+                        "Content-Type": "application/json"
+                    });
+                    res.end(JSON.stringify({ error: result }));
+                    return;
+                }
+ 
+                res.writeHead(201, {
+                    "Content-Type": "application/json"
+                });
+                res.end(JSON.stringify(result));
+            } catch (error) {
+                res.writeHead(400, {
+                    "Content-Type": "application/json"
+                });
+                res.end(JSON.stringify({ error: error instanceof Error ? error.message : "JSON inválido o error en la solicitud." }));
+            }
+        });
+        return;
+    }
+    
+    if(partes?.length === 3 && partes[1] === "clientes" && req.method === "GET"){
+        const id = Number(partes[2]);
+        const c = await buscarCliente(id);
+ 
+        if(!c){
+            res.writeHead(404, {
+                "Content-Type": "application/json"
+            });
+            res.end(JSON.stringify({ error : "EL id no existe"}));
+            return;
+        }
+ 
+        res.writeHead(200,{
+            "Content-Type":"application/json"
+        });
+        res.end(JSON.stringify(c));
+        return;
+    }
+    
+    if(partes?.length === 3 && partes[1] === "clientes" && req.method === "PUT"){
+        const id = Number(partes[2]);
+        let body = "";
+ 
+        req.on("data", (chunk) =>{
+            body += chunk;
+        });
+ 
+        req.on("end", async () =>{
+            try {
+                const p = JSON.parse(body);
+                const result = await actualizarCliente(id, p.nombre, p.apellido, p.direccion, p.telefono, p.tipo, p.dpi, p.correo);
+ 
+                res.writeHead(200,{
+                    "Content-Type":"application/json"
+                });
+                res.end(JSON.stringify(result));
+            } catch (error) {
+                res.writeHead(400, {
+                    "Content-Type": "application/json"
+                });
+                res.end(JSON.stringify({ error: "Error al procesar la actualización" }));
+            }
+        });
+        return;
+    }
+    
+    if(partes?.length === 3 && partes[1] === "clientes" && req.method === "DELETE"){
+        const id = Number(partes[2]);
+        const result = await eliminarCliente(id);
+ 
+        res.writeHead(200, {
+            "Content-Type": "text/plain"
+        });
+        res.end(result);
+        return;
+    }
+
     res.writeHead(404, {
         "Content-Type":"application/json"
     });
