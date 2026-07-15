@@ -1,3 +1,1 @@
-import { menu } from "./menu/menu"
-
-menu();
+import "./api/server";
