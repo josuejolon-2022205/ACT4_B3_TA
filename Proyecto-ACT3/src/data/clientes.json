@@ -9,7 +9,6 @@
     "dpi_cliente": 124345,
     "correo_cliente": "caldo@gmail.com"
   },
-  
   {
     "id_cliente": 2,
     "nombre_cliente": "María",
@@ -49,15 +48,5 @@
     "tipo_cliente": "FRECUENTE",
     "dpi_cliente": 567890,
     "correo_cliente": "luis.hernandez@gmail.com"
-  },
-  {
-    "id_cliente": 6,
-    "nombre_cliente": "josue",
-    "apellido_cliente": "jolon",
-    "direccion_cliente": "zona 3",
-    "telefono_cliente": 51700967,
-    "dpi_cliente": 435353245,
-    "correo_cliente": "josue@gmail.com",
-    "tipo_cliente": "NUEVO"
   }
 ]
