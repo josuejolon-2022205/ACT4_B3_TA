@@ -1,28 +1,28 @@
 import { Cliente } from "../models/clientes";
-import { leerClientes } from "../utils/reader";
-import { escribirClientes } from "../utils/writer";
-import { validarCliente } from "../validator/validaciones"
+import { ClienteRepository } from "../data/clienteRepository";
+import { validarCliente } from "../validator/validations";
+import { NotFoundError } from "../errors/customErrors";
 
+const repository = new ClienteRepository();
+ 
 export async function listarCliente(): Promise<Cliente[] | string> {
-    return leerClientes();
+    return repository.obtenerTodos();
 }
 
 export async function listarClientes(): Promise<Cliente[]> {
-    const res = await leerClientes();
-    return Array.isArray(res) ? res : [];
+    return repository.obtenerTodos();
 }
-
+ 
 export async function buscarCliente(id: number): Promise<Cliente | null> {
-    const clientes: Cliente[] = await leerClientes();
-    return clientes.find(c => c.id_cliente === id) || null;
+    return repository.buscarPorId(id);
 }
-
+ 
 export async function crearCliente(nuevoCliente: Cliente): Promise<void> {
     validarCliente(nuevoCliente);
-    const clientes: Cliente[] = await leerClientes();
+    const clientes = await repository.obtenerTodos();
     nuevoCliente.id_cliente = clientes.length > 0 ? Math.max(...clientes.map(c => c.id_cliente)) + 1 : 1;
     clientes.push(nuevoCliente);
-    await escribirClientes(clientes);
+    await repository.guardar(clientes);
 }
 
 export async function agregarCliente(
@@ -35,7 +35,7 @@ export async function agregarCliente(
     dpi: number,
     correo: string
 ): Promise<Cliente | string> {
-    const clientes: Cliente[] = await leerClientes();
+    const clientes = await repository.obtenerTodos();
     if (clientes.some(c => c.id_cliente === id)) {
         return "El ID del cliente ya existe.";
     }
@@ -51,17 +51,13 @@ export async function agregarCliente(
         correo_cliente: correo
     };
 
-    try {
-        validarCliente(nuevo);
-    } catch (e: any) {
-        return e.message;
-    }
+    validarCliente(nuevo);
 
     clientes.push(nuevo);
-    await escribirClientes(clientes);
+    await repository.guardar(clientes);
     return nuevo;
 }
-
+ 
 export async function actualizarCliente(
     id: number,
     nombreOrDatos: string | Partial<Cliente>,
@@ -72,14 +68,16 @@ export async function actualizarCliente(
     dpi?: number,
     correo?: string
 ): Promise<boolean | Cliente> {
-    const clientes: Cliente[] = await leerClientes();
-    if (id <= 0) return false;
-
+    const clientes = await repository.obtenerTodos();
+    if (id <= 0) {
+        throw new NotFoundError("El ID del cliente debe ser mayor que 0.");
+    }
+ 
     const index = clientes.findIndex(c => c.id_cliente === id);
     if (index === -1) {
-        return false;
+        throw new NotFoundError(`No se encontró el cliente con ID ${id}.`);
     }
-
+ 
     let actualizarDatos: Partial<Cliente> = {};
 
     if (typeof nombreOrDatos === "object" && nombreOrDatos !== null) {
@@ -95,7 +93,7 @@ export async function actualizarCliente(
     }
 
     clientes[index] = { ...clientes[index], ...actualizarDatos };
-    await escribirClientes(clientes);
+    await repository.guardar(clientes);
 
     if (typeof nombreOrDatos === "object" && nombreOrDatos !== null) {
         return true;
@@ -103,22 +101,25 @@ export async function actualizarCliente(
         return clientes[index];
     }
 }
-
+ 
 export async function eliminarClientePorId(id: number): Promise<boolean> {
-    const clientes: Cliente[] = await leerClientes();
+    const clientes = await repository.obtenerTodos();
     if (id <= 0) return false;
-
+ 
     const index = clientes.findIndex(c => c.id_cliente === id);
     if (index === -1) {
       return false;
     }
-
+ 
     clientes.splice(index, 1);
-    await escribirClientes(clientes);
+    await repository.guardar(clientes);
     return true;
 }
-
+ 
 export async function eliminarCliente(id: number): Promise<string> {
     const result = await eliminarClientePorId(id);
-    return result ? "Cliente eliminado correctamente." : "El ID no existe.";
+    if (!result) {
+        throw new NotFoundError(`No se encontró el cliente con ID ${id}.`);
+    }
+    return "Cliente eliminado correctamente.";
 }
