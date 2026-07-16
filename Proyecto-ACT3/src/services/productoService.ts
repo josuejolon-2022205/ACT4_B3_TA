@@ -1,30 +1,34 @@
 import { Producto } from "../models/producto";
-import { leerProductos } from "../utils/reader";
-import { escribirProductos } from "../utils/writer";
-import { validarProducto } from "../validator/validaciones";
+import { ProductoRepository } from "../data/productoRepository";
+import { validarProducto } from "../validator/validations";
+import { NotFoundError } from "../errors/customErrors";
 
+const repository = new ProductoRepository();
+ 
 export async function listarProducto(): Promise<Producto[] | string> {
-    return leerProductos();
+    return repository.obtenerTodos();
 }
-
+ 
 export async function listarProductos(): Promise<Producto[]> {
-    const res = await leerProductos();
-    return Array.isArray(res) ? res : [];
+    return repository.obtenerTodos();
 }
-
+ 
 export async function buscarProducto(id: number): Promise<Producto | null> {
-    const productos: Producto[] = await leerProductos();
-    return productos.find(p => p.id_producto === id) || null;
+    const p = await repository.buscarPorId(id);
+    if (!p) {
+        throw new NotFoundError(`No se encontró el producto con ID ${id}.`);
+    }
+    return p;
 }
-
+ 
 export async function crearProducto(nuevoProducto: Producto): Promise<void> {
     validarProducto(nuevoProducto);
-    const productos: Producto[] = await leerProductos();
+    const productos = await repository.obtenerTodos();
     nuevoProducto.id_producto = productos.length > 0 ? Math.max(...productos.map(p => p.id_producto)) + 1 : 1;
     productos.push(nuevoProducto);
-    await escribirProductos(productos);
+    await repository.guardar(productos);
 }
-
+ 
 export async function agregarProducto(
     id: number,
     nombre: string,
@@ -34,7 +38,7 @@ export async function agregarProducto(
     estado: any,
     descuento: number
 ): Promise<Producto | string> {
-    const productos: Producto[] = await leerProductos();
+    const productos = await repository.obtenerTodos();
     if (productos.some(p => p.id_producto === id)) {
         return "El ID del producto ya existe.";
     }
@@ -50,17 +54,13 @@ export async function agregarProducto(
         descuento: descuento
     };
 
-    try {
-        validarProducto(nuevo);
-    } catch (e: any) {
-        return e.message;
-    }
+    validarProducto(nuevo);
 
     productos.push(nuevo);
-    await escribirProductos(productos);
+    await repository.guardar(productos);
     return nuevo;
 }
-
+ 
 export async function actualizarProducto(
     id: number,
     nombreOrDatos: string | Partial<Producto>,
@@ -70,14 +70,16 @@ export async function actualizarProducto(
     estado?: any,
     descuento?: number
 ): Promise<boolean | Producto> {
-    const productos: Producto[] = await leerProductos();
-    if (id <= 0) return false;
-
+    const productos = await repository.obtenerTodos();
+    if (id <= 0) {
+        throw new NotFoundError("El ID del producto debe ser mayor que 0.");
+    }
+ 
     const index = productos.findIndex(p => p.id_producto === id);
     if (index === -1) {
-        return false;
+        throw new NotFoundError(`No se encontró el producto con ID ${id}.`);
     }
-
+ 
     let actualizarDatos: Partial<Producto> = {};
 
     if (typeof nombreOrDatos === "object" && nombreOrDatos !== null) {
@@ -92,7 +94,7 @@ export async function actualizarProducto(
     }
 
     productos[index] = { ...productos[index], ...actualizarDatos };
-    await escribirProductos(productos);
+    await repository.guardar(productos);
 
     if (typeof nombreOrDatos === "object" && nombreOrDatos !== null) {
         return true;
@@ -100,48 +102,51 @@ export async function actualizarProducto(
         return productos[index];
     }
 }
-
+ 
 export async function eliminarProductoPorId(id: number): Promise<boolean> {
-    const productos: Producto[] = await leerProductos();
+    const productos = await repository.obtenerTodos();
     if (id <= 0) return false;
-
+ 
     const index = productos.findIndex(p => p.id_producto === id);
     if (index === -1) {
         return false;
     }
-
+ 
     productos.splice(index, 1);
-    await escribirProductos(productos);
+    await repository.guardar(productos);
     return true;
 }
-
+ 
 export async function eliminarProducto(id: number): Promise<string> {
     const result = await eliminarProductoPorId(id);
-    return result ? "Producto eliminado correctamente." : "El ID no existe.";
+    if (!result) {
+        throw new NotFoundError(`No se encontró el producto con ID ${id}.`);
+    }
+    return "Producto eliminado correctamente.";
 }
-
+ 
 export const calcularSubtotal = (montos: number[]): number =>
     montos.reduce((acumulado, monto) => acumulado + monto, 0);
-
+ 
 export const calcularIVA = (subtotal: number, tasaIVA: number): number =>
     subtotal * tasaIVA;
-
+ 
 export const calcularTotalFinal = (subtotal: number, iva: number): number =>
     subtotal + iva;
-
+ 
 export async function calcularVentaProducto(id: number, IVA: number = 0.12): Promise<void> {
-    const productos: Producto[] = await leerProductos();
+    const productos = await repository.obtenerTodos();
     const producto = productos.find(p => p.id_producto === id);
-
+ 
     if (!producto) {
         console.log("El producto no existe.");
         return;
     }
-
+ 
     const subtotal = calcularSubtotal([producto.precio]);
     const iva = calcularIVA(subtotal, IVA);
     const total = calcularTotalFinal(subtotal, iva);
-
+ 
     console.log("|----- resumen de venta ------|");
     console.log("|-- ID: " + producto.id_producto);
     console.log("|-- subtotal: " + subtotal);
