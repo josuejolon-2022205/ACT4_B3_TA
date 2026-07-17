@@ -11,13 +11,13 @@
   },
   {
     "id_producto": 2,
-    "nombre_producto": "Martillo",
+    "nombre_producto": "nose ",
     "codigo_producto": 1002,
     "cantidad": 30,
-    "precio": 75,
+    "precio": 40,
     "categoria": "de hogar",
     "estado_venta": "pagado",
-    "descuento": 5
+    "descuento": 20
   },
   {
     "id_producto": 3,
@@ -44,6 +44,16 @@
     "nombre_producto": "Destornillador Phillips",
     "codigo_producto": 1005,
     "cantidad": 25,
+    "precio": 40,
+    "categoria": "de hogar",
+    "estado_venta": "Cancelada",
+    "descuento": 20
+  },
+  {
+    "id_producto": 6,
+    "nombre_producto": "nose ",
+    "codigo_producto": 8396,
+    "cantidad": 40,
     "precio": 40,
     "categoria": "de hogar",
     "estado_venta": "Cancelada",

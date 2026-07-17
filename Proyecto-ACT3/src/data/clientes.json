@@ -21,13 +21,13 @@
   },
   {
     "id_cliente": 3,
-    "nombre_cliente": "José",
-    "apellido_cliente": "Pérez",
-    "direccion_cliente": "Zona 12",
-    "telefono_cliente": 55896321,
-    "tipo_cliente": "MAYORISTA",
-    "dpi_cliente": 345678,
-    "correo_cliente": "jose.perez@gmail.com"
+    "nombre_cliente": "lazaro",
+    "apellido_cliente": "Rojas",
+    "direccion_cliente": "Zona 10",
+    "telefono_cliente": 592314785,
+    "tipo_cliente": "FRECUENTE",
+    "dpi_cliente": 5678903,
+    "correo_cliente": "lazaro.rojas@gmail.com"
   },
   {
     "id_cliente": 4,
@@ -48,5 +48,15 @@
     "tipo_cliente": "FRECUENTE",
     "dpi_cliente": 567890,
     "correo_cliente": "luis.hernandez@gmail.com"
+  },
+  {
+    "id_cliente": 6,
+    "nombre_cliente": "lazaro",
+    "apellido_cliente": "Rojas",
+    "direccion_cliente": "Zona 10",
+    "telefono_cliente": 592314785,
+    "tipo_cliente": "FRECUENTE",
+    "dpi_cliente": 5678903,
+    "correo_cliente": "lazaro.rojas@gmail.com"
   }
 ]
