@@ -39,12 +39,18 @@ export async function agregarProducto(
     descuento: number
 ): Promise<Producto | string> {
     const productos = await repository.obtenerTodos();
-    if (productos.some(p => p.id_producto === id)) {
-        return "El ID del producto ya existe.";
+    
+    let idAutoIncrement = id;
+    if (id === undefined || id === null || Number.isNaN(id) || id <= 0) {
+        idAutoIncrement = productos.length > 0 ? Math.max(...productos.map(p => p.id_producto)) + 1 : 1;
+    } else {
+        if (productos.some(p => p.id_producto === id)) {
+            return `El ID del producto ${id} ya existe.`;
+        }
     }
 
     const nuevo: Producto = {
-        id_producto: id,
+        id_producto: idAutoIncrement,
         nombre_producto: nombre,
         codigo_producto: Math.floor(1000 + Math.random() * 9000),
         cantidad: stock,
