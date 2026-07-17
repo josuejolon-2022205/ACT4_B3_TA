@@ -3,7 +3,7 @@ import { router } from "./router";
 
 const port = 3000;
 
-const server = http.createServer(async (req, res) => {
+export const server = http.createServer(async (req, res) => {
     await router(req, res);
 });
 
