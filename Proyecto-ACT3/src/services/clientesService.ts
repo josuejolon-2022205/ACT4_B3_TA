@@ -36,12 +36,18 @@ export async function agregarCliente(
     correo: string
 ): Promise<Cliente | string> {
     const clientes = await repository.obtenerTodos();
-    if (clientes.some(c => c.id_cliente === id)) {
-        return "El ID del cliente ya existe.";
+    
+    let idAutoIncrement = id;
+    if (id === undefined || id === null || Number.isNaN(id) || id <= 0) {
+        idAutoIncrement = clientes.length > 0 ? Math.max(...clientes.map(c => c.id_cliente)) + 1 : 1;
+    } else {
+        if (clientes.some(c => c.id_cliente === id)) {
+            return `El ID del cliente ${id} ya existe.`;
+        }
     }
 
     const nuevo: Cliente = {
-        id_cliente: id,
+        id_cliente: idAutoIncrement,
         nombre_cliente: nombre,
         apellido_cliente: apellido,
         direccion_cliente: direccion,
