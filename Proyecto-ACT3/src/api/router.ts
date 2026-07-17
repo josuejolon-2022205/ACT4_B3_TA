@@ -48,15 +48,22 @@ export async function router(req : http.IncomingMessage, res : http.ServerRespon
             req.on("end", async () =>{
                 try {
                     const p = JSON.parse(body);
+                    
+                    const id = p.id_producto !== undefined ? p.id_producto : p.id;
+                    const nombre = p.nombre_producto || p.nombre;
+                    const stock = p.cantidad !== undefined ? p.cantidad : p.stock;
+                    const estado = p.estado_venta || p.estado;
+                    const codigo = p.codigo_producto !== undefined ? p.codigo_producto : p.codigo;
      
-                    const result = await agregarProducto(
-                        Number(p.id),
-                        p.nombre,
+                    const result = await (agregarProducto as any)(
+                        Number(id),
+                        nombre,
                         Number(p.precio),
-                        Number(p.stock),
+                        Number(stock),
                         p.categoria,
-                        p.estado,
-                        Number(p.descuento)
+                        estado,
+                        Number(p.descuento),
+                        codigo !== undefined ? Number(codigo) : 0
                     );
      
                     if (typeof result === "string") {
